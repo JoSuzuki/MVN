@@ -1,0 +1,239 @@
+300D #100 LV 00D em ascii 0x0D = Carriage return /100
+E003 #102 Put CR
+300A #104 LV 00A em ascii 0x0A = Line feed
+E003 #106 Put LF
+3045 #108 LV 045 em ascii 0x45 = E, escolha
+E003 #10A Put 'E'
+303A #10C LV 03A em ascii 0x3A = :
+E003 #10E Put ':'
+3020 #110 LV 020 em ascii 0x20 = espaco
+E003 #10A Put ' '
+D004 #10C Get .nextInt()
+52BE #10E - um
+1126 #110 pula para a rotina de escrita
+52BE #112 - um
+11B8 #114 pula para a rotina de leitura
+52BE #116 - um
+1298 #xxx pula para a execucao do Programa
+52BE #xxx -um
+C002 #118 HALT FIM
+3049 #11A LV 049 em ascii 0x49 = I, incial ROTINA DE ESCRITA ROTINA DE ESCRITA ROTINA DE ESCRITA ROTINA DE ESCRITA
+E003 #11C Put 'I'
+303A #11E LV 03A em ascii 0x3A = :
+E003 #120 Put ':'
+3020 #122 LV 020 em ascii 0x20 = espaco
+E003 #124 Put ' '
+A186 #126 Vai para subrotina de get q salva o valor na variavel get
+82C6 #128 LD no valor da variavel get
+92BA #12A MM endereco inicial maior
+42C1 #12C + comando MM
+916E #12E MM altera byte mais significativo do comando move
+A186 #130 Vai para subrotina de get q salva o valor na variavel get
+82C6 #132 LD no valor da variavel get
+92BB #134 MM endereco inicial menor
+916F #136 altera byte menos significativo do comando move
+3023 #xxx LV 023 em ascii 0x023 = hashtag, indicando posicao LOOP DE ESCRITA LOOP DE ESCRITA LOOP DE ESCRITA
+E003 #xxx Put 'hashtag'
+816F #xxx LD XX
+92C8 #xxx MM para a variavel put
+A25E #xxx Vai para a subrotina de impressao hexa
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+3056 #138 LV 056 em ascii 0x56 = V, valor
+E003 #13A Put 'V'
+303A #13C LV 03A em ascii 0x3A = :
+E003 #13E Put ':'
+3020 #140 LV 020 em ascii 0x20 = espaco
+E003 #142 Put ' '
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+A186 #144 Vai para subrotina de get q salva o valor na variavel get
+82C6 #146 LD no valor da variavel get
+9000 #148 MM
+816F #14A LD XX
+42BE #14C + UM
+0176 #14E NOP
+916F #150 MM XX
+52BF #152 - FF, caso de positivo entra no tratamento
+2184 #154 caso negativo
+1184 #156 ou igual a zero, pula essa parte de tratamento trata qndo tiver q alterar o 3caractere do comando move
+816E #158 LD no primeiro byte do move
+42BE #15A + um
+916E #15C MM no primeiro byte do move
+0144 #15E JP LOOP AQUI Nao chegou em /100 AQUI Nao chegou em /100 AQUI Nao chegou em /100 AQUI Nao chegou em /100 AQUI Nao chegou em /100
+0000 #160 endereco de volta da subrotina  Subrotina de conversao do get byte ascii para binarioSubrotina de conversao do get byte ascii para binarioSubrotina de conversao do get byte ascii para binarioSubrotina de conversao do get byte ascii para binario
+D003 #162 get char mais significativo do byte
+92C7 #164 MM na variavel auxilar get
+52C4 #166 -64 para ver se eh letra ou numero
+1100 #168 @ em ascii = 64, se for igual a @ sai do programa
+21AC #16A jmp if negative para ROTINADENUMERO1
+82C7 #16C LD na variavel auxiliar get
+52C3 #16E -0x37 pra transformar o char letra em seu numero
+62C0 #170 multiplica por 16, pois eh o mais significativo volta da ROTINADENUMERO1
+92C6 #172 MM na variavel get
+D003 #174 get char menos significativo do byte
+92C7 #176 MM na variavel auxiliar get
+52C4 #178 -64 para ver se eh letra ou numero
+21B2 #17A jmp if negative para a ROTINADENUMERO2
+82C7 #17C LD na variavel auxiliar get
+52C3 #17E -0x37 para transformar em letra
+42C6 #180 + soma resultado com o valor presente em get, volta da ROTINADENUMERO2
+92C6 #182 MM guarda resultado na variavel get
+B186 #184 volta da subrotina
+82C7 #186 LD na variavel auxiliar get  ROTINADENUMERO1 ROTINADENUMERO1 ROTINADENUMERO1 ROTINADENUMERO1 ROTINADENUMERO1 ROTINADENUMERO1
+52C2 #188 -0x30 pra transformar o char numero em seu numero
+0196 #18A jump incondicional para volta rotina de numero1
+82C7 #18C LD na variavel auxiliar get  ROTINADENUMERO2 ROTINADENUMERO2 ROTINADENUMERO2 ROTINADENUMERO2 ROTINADENUMERO2 ROTINADENUMERO2
+52C2 #18E -0x30 pra transformar o char numero em seu numero
+01A6 #190 jump incondicional para volta rotina de numero2
+3000 #192 LV 000 ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA ROTINA DE LEITURA
+92CA #194 zera o contador
+3049 #196 LV 049 em ascii 0x49 = I, incial
+E003 #198 Put 'I'
+303A #19A LV 03A em ascii 0x3A = :
+E003 #19C Put ':'
+3020 #19E LV 020 em ascii 0x20 = espaco
+E003 #1A0 Put ' '
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+A186 #1A2 Vai para subrotina de get q salva o valor na variavel get
+82C6 #1A4 LD no valor da variavel get
+42CB #1A6 + $80 valor do comando LOAD
+920C #1A8 MM endereco inicial mais significativo
+A186 #1AA Vai para subrotina de get q salva o valor na variavel get
+82C6 #1AC LD no valor da variavel get
+920D #1AE MM endereco inicial menos significativo
+3046 #1B0 LV 046 em ascii 0x46 = F, final
+E003 #1B2 Put 'F'
+303A #1B4 LV 03A em ascii 0x3A = :
+E003 #1B6 Put ':'
+3020 #1B8 LV 020 em ascii 0x20 = espaco
+E003 #1BA Put ' '
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+A186 #1BC Vai para subrotina de get q salva o valor na variavel get
+82C6 #1BE LD no valor da variavel get
+92BC #1C0 MM para o tamanho mais significativo
+A186 #1C2 Vai para subrotina de get q salva o valor na variavel get
+82C6 #1C4 LD no valor da variavel get
+92BD #1C6 MM tamanho menos significativo
+820D #xxx LD XX
+92C8 #xxx MM guarda na variavel put
+A25E #xxx chama a subrotina de put hexa
+3020 #1CE LV 020 em ascii 0x20 = espaco
+E003 #1D0 Put ' '
+3020 #1CE LV 020 em ascii 0x23 = espaco
+E003 #1D0 Put ' '
+8000 #1C8 LD o numero a ser put  loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8
+92C8 #1CA MM guarda na variavel put
+A25E #1CC jump para a subrotina de put hexa
+3020 #1CE LV 020 em ascii 0x20 = espaco
+E003 #1D0 Put ' '
+82CA #1D2 LD contador
+42BE #1D4 + 1
+92CA #1D6 MM contador
+52C0 #1D8 - 16 para saber se imprimiu uma linha
+1244 #1DA Pula se acc = 0 para rotina de pular linha
+820D #1DC LD XX
+42BE #1DE XX + 1
+920D #1E0 MM XX
+52BF #1E2 XX - FF se o resultado for positivo
+2232 #1E4 vai para nao chegou em 100
+1232 #1E6 vai para nao chegou em 100
+820C #1E8 LD no primeiro byte de varENDERECOPUT entra nessa linha, pq tem q aumentar o 3digito do comando
+42BE #1EA + 1
+920C #1EC MM no primeiro byte de varENDERECOPUT
+820C #1EE LD qseXX AQUI  AQUI AQUI AQUI AQUI AQUI AQUI AQUI AQUI AQUI AQUI AQUI
+52CB #1F0 - commando load
+52BC #1F2 - tamanho mais significativo
+62C0 #1F4 mulitplica por dezesseis
+62C0 #1F6 multiplica por dezesseis de novo, para deslocar 1 byte
+420D #1F8 + XX
+52BD #1FA - tamanho menos significativo
+1100 #1FC JZ fim
+020C #1FE JP loop
+92CA #200 MM contador = 0 rotina de pular linha rotina de pular linha rotina de pular linha rotina de pular linha rotina de pular linha rotina de pular linha rotina de pular linha rotina de pular linha
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+820D #xxx LD XX
+42BE #xxx + 1
+92C8 #xxx MM guarda na variavel put
+A25E #xxx chama a subrotina de put hexa
+3020 #1CE LV 020 em ascii 0x20 = espaco
+E003 #1D0 Put ' '
+E003 #1D0 Put ' '
+0220 #20A volta de pular linha
+0000 #20C lugar para salvar o endereco de retorno da subrotina subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa
+82C8 #20E LD no endereco
+72C0 #210 divide por 16 para pegar o caractere mais significativo
+92C9 #212 MM na variavel auxiliar put
+52C5 #214 - 10 pra ver se eh numero ou letra
+2288 #216 pula para caso de numero
+82C9 #218 LD na variavel auxiliar put
+42C3 #21A + 0x37 pra codificar letra hexadecimal em char
+E003 #21C put com operando 03 -> print
+82C8 #21E LD no endereço
+62C0 #220 multiplica por 16 para deslocar um caractere
+92C9 #222 MM para variavel put auxiliar (serve para conseguir cortar o caractere menos significativo)
+82C9 #224 LD variavel put auxiliar
+72C0 #226 divide por 16
+92C9 #228 MM variavel put auxiliar
+52C5 #22A -10 para ver se eh numero ou letra
+2290 #22C pula para caso de numero
+82C9 #22E LD no caractere menos significativo (variavel auxiliar put)
+42C3 #230 + 0x37 para codificar letra em char
+E003 #232 put com operando 003 -> print
+B25E #234 Retorno de subrotina
+82C9 #236 LD na variavel auxiliar put NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO NEGATIVO
+42C2 #238 + 0x30 para codificar letra em hexadecimal
+E003 #23A put com operando 03 -> print
+0270 #23C volta da rotina
+82C9 #23E LD no endereco NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO NEGATIVODENOVO
+42C2 #240 + 0x30 para codificar letra em hexadecimal
+E003 #242 put com operando 03 -> print
+0286 #244 volta da rotina
+3049 #196 LV 049 em ascii 0x49 = I, incial ROTINA DE EXECUCAO DO PROGRAMA ROTINA DE EXECUCAO DO PROGRAMA ROTINA DE EXECUCAO DO PROGRAMA ROTINA DE EXECUCAO DO PROGRAMA ROTINA DE EXECUCAO DO PROGRAMA ROTINA DE EXECUCAO DO PROGRAMA
+E003 #198 Put 'I'
+303A #19A LV 03A em ascii 0x3A = :
+E003 #19C Put ':'
+3020 #19E LV 020 em ascii 0x20 = espaco
+E003 #1A0 Put ' '
+300D #202 LV 00D em ascii 0x0D = Carriage return
+E003 #204 Put CR
+300A #206 LV 00A em ascii 0x0A = Line feed
+E003 #208 Put LF
+A186 #1A2 Vai para subrotina de get q salva o valor na variavel get
+82C6 #1A4 LD no valor da variavel get
+92B8 #1A8 MM endereco inicial mais significativo
+A186 #1AA Vai para subrotina de get q salva o valor na variavel get
+82C6 #1AC LD no valor da variavel get
+92B9 #1AE MM endereco inicial menos significativo
+0000 #2B8 jump para o endereco desejado
+00 #2BA varENDERECOINICIALMAIOR variaveis variaveis variaveis variaveis variaveis variaveis variaveis variaveis variaveis variaveis variaveis
+00 #2BB varENDERECOINICIALMENOR
+10 #2BC varTAMANHOMAIOR na verdade eh o endereco final
+00 #2BD varTAMANHOMENOR na verdade eh o endereco final
+01 #2BE varUM
+FF #2BF varFF
+10 #2C0 varDEZESSEIS
+90 #2C1 varMOVE
+30 #2C2 varNUMERO
+37 #2C3 varLETRA
+40 #2C4 varSESSENTAEQUATRO
+0A #2C5 varDEZ
+00 #2C6 varGET
+00 #2C7 varAUXILIARGET
+00 #2C8 varPUT
+00 #2C9 varAUXILIARPUT
+00 #2CA varCONTADOR
+80 #2CB varLOAD

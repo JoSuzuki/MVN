@@ -159,7 +159,7 @@ class Mvn{
         } else if (operator == 2) {
           Files.write(Paths.get(".\\put.txt"), ((char)this.getAccumulator()+"\n").getBytes(), StandardOpenOption.APPEND);
         } else if (operator == 3){
-          System.out.printf("%c",(char)this.getAccumulator());
+          System.out.printf("%c",this.getAccumulator());
         } else if (operator == 4){
           System.out.printf("%d",this.getAccumulator());
         }

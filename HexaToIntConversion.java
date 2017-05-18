@@ -18,8 +18,8 @@ public class HexaToIntConversion {
 			 for(int i=0; i < getTxtSplit.length ;i++ ){
 				 System.out.println(getTxtSplit[i]);
 			 }*/
-			 String hexa = ".\\e10h.txt";
-			 String binary = ".\\e10b.txt";
+			 String hexa = ".\\e11h.txt";
+			 String binary = ".\\e11b.txt";
 			 Scanner scan = new Scanner(new FileInputStream(new File(hexa)));
 			 String totaltxt = "";
 			 while(scan.hasNextLine()){
