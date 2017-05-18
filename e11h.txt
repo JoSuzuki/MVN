@@ -128,9 +128,9 @@ A186 #1C2 Vai para subrotina de get q salva o valor na variavel get
 820D #xxx LD XX
 92C8 #xxx MM guarda na variavel put
 A25E #xxx chama a subrotina de put hexa
-3023 #1CE LV 023 em ascii 0x23 = hashtag
-E003 #1D0 Put 'hashtag'
 3020 #1CE LV 020 em ascii 0x20 = espaco
+E003 #1D0 Put ' '
+3020 #1CE LV 020 em ascii 0x23 = espaco
 E003 #1D0 Put ' '
 8000 #1C8 LD o numero a ser put  loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8 loop 1C8
 92C8 #1CA MM guarda na variavel put
@@ -166,11 +166,11 @@ E003 #204 Put CR
 300A #206 LV 00A em ascii 0x0A = Line feed
 E003 #208 Put LF
 820D #xxx LD XX
+42BE #xxx + 1
 92C8 #xxx MM guarda na variavel put
 A25E #xxx chama a subrotina de put hexa
-3023 #1CE LV 023 em ascii 0x23 = hashtag
-E003 #1D0 Put 'hashtag'
 3020 #1CE LV 020 em ascii 0x20 = espaco
+E003 #1D0 Put ' '
 E003 #1D0 Put ' '
 0220 #20A volta de pular linha
 0000 #20C lugar para salvar o endereco de retorno da subrotina subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa subrotina de put binario para ascii hexa
