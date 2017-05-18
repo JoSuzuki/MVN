@@ -1,0 +1,78 @@
+#Esse programa comeca da posicao $A00 (2560)
+
+#Inicializa e prepara variaveis
+3000 #A00 Load value 000
+8VARCHECKSUM #A02 MM checksum
+8VARCONTADOR #A04 MM contador
+8VARENDERECOINICIALMAIOR #A06 LD endereco inicial mais singificativo
+4VARLOAD #A08 + $80 valor do comando LOAD
+9QSEVARENDERECOPUT #A0A MM endereco inicial mais significativo
+8VAREDERENCOINICIALMENOR #A0C LD endereco inicial menos significativo
+9VARENDERECOPUT #A0E MM endereco inicial menos significativo
+8VARENDERECOINICIALMAIOR #A10 LD endereco inicial mais significativo
+4VARTAMANHOMAIOR #A12 Soma com o tamanho mais significativo
+6VARDEZESSEIS #A14 Multiplica por 16
+6VARDEZESSEIS #A16 Multiplica de novo por 16 pra ter 256 (deslocamento de um byte)
+4VARENDERECOINICIALMENOR #A18 Soma com o endereco menos significativo
+4VARTAMANHOMENOR #A1A Soma com o tamanho menos significativo
+9VARTAMANHOMENOR #A1C MM tamanho menos significativo
+7VARDEZESSEIS #A1E Divide por 16
+7VARDEZESSEIS #A20 Divide de novo por 16
+9VARTAMANHOMAIOR #A22 MM para o tamanho mais significativo
+
+#loop A24
+80varENDERECOPUT #A24 LD valordeX
+E000 #A26 Put
+4VARCHECKSUM #A28 + checksum
+9VARCHECKSUM #A2A MM cheksum
+8VARCONTADOR #A2C LD contador
+4VARUM #A2E + 1
+9VARCONTADOR #A30 MM contador
+5VARLIMITE #A32 contador - limite
+1ROTINADELIMITE #A34 se zero vai ate a subrotina q salva o checksum
+8VARENDERECOPUT #A36 LD XX
+4VARUM #A38 XX + 1
+9VARENDERECOPUT #A3A MM XX
+5VARFF #A3C XX - FF se o resultado for positivo
+2AQUI #A3E vai para nao chegou em 100
+1AQUI #A40 vai para nao chegou em 100
+#entra nessa linha, pq tem q aumentar o 3digito do comando
+8QSEVARENDERECOPUT #A42 LD no primeiro byte de varENDERECOPUT
+4VARUM #A44 + 1
+9QSEVARENDERECOPUT #A46 MM no primeiro byte de varENDERECOPUT
+#AQUI A48
+8QSEVARENDERECOPUT #A48 LD qseXX
+5VARLOAD #A4A - commando load
+5VARTAMANHOMAIOR #A4C - tamanho mais significativo
+6VARDEZESSEIS #A4E mulitplica por dezesseis
+6VARDEZESSSEIS #A50 multiplica por dezesseis de novo, para deslocar 1 byte
+4VARENDERECOPUT #A52 + XX
+5VARTAMANHOMENOR #A54 - tamanho menos significativo
+1054 #A56 JZ fim
+0040 #A58 JP loop
+
+#Rotinadelimite A5A
+8VARCHECKSUM #A5A LD checksum
+E000 #A5C put no valor do checksum
+3000 #A5E Load value 000   zera checksum e contador
+9VARCHECKSUM #A60 MM checksum
+9VARCONTADOR #A62 MM contador
+0VOLTASUBROTINALIMITE #A64 volta da Rotina de limite
+
+#fim A66
+8VARCHECKSUM #A66 LD checksum
+E000 #A68 Put checksum
+C000 #A6A halt
+
+#variaveis
+01 #A6C varUM
+00 #A6D varENDERECOINICIALMAIOR
+00 #A6E varENDERECOINICIALMENOR
+10 #A6F varTAMANHOMAIOR
+00 #A70 varTAMANHOMENOR
+00 #A71 varCHECKSUM
+00 #A72 varCONTADOR
+7F #A73 varLIMITE
+FF #A74 varFF
+10 #A75 varDEZESSEIS
+80 #A76 varLOAD

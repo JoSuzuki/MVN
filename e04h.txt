@@ -1,0 +1,12 @@
+#esse programa nao funciona mais, pois alterou-se a funcao get da mvn para utlizar o operando, veja o reescrito
+#para usar esse programa eh necessario alterar manualmente o valor da posicao FFF para o tamanho do programa + $10
+#no caso do e01exemploN2 (que comeca em $10), posicao FFF = $37 (55)
+#LOOP
+D001 #0 Get, como get nao tem operando, a variavel UM eh guardada nele
+9010 #2 MM X (010 = posição inicial do programa)
+8003 #4 LD valordeX
+4001 #6 + 01
+9003 #8 MM valordeX
+5FFF #10 - Tamanho do programa
+1010 #12 JZ vai ate 010 (inicio do programa e01exemploN2)
+0000 #14 JP LOOP

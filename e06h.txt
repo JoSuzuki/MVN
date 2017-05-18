@@ -1,0 +1,73 @@
+#Esse programa comeca da posicao $A00 (2560)
+#Inicializa e prepara variaveis
+3000 #A00 Load value 000
+9A71 #A02 MM checksum
+9A72 #A04 MM contador
+8A6D #A06 LD endereco inicial mais singificativo
+4A76 #A08 + $80 valor do comando LOAD
+9A24 #A0A MM endereco inicial mais significativo
+8A6E #A0C LD endereco inicial menos significativo
+9A25 #A0E MM endereco inicial menos significativo
+8A6D #A10 LD endereco inicial mais significativo
+4A6F #A12 Soma com o tamanho mais significativo
+6A75 #A14 Multiplica por 16
+6A75 #A16 Multiplica de novo por 16 pra ter 256 (deslocamento de um byte)
+4A6E #A18 Soma com o endereco menos significativo
+4A70 #A1A Soma com o tamanho menos significativo
+9A70 #A1C MM tamanho menos significativo
+7A75 #A1E Divide por 16
+7A75 #A20 Divide de novo por 16
+9A6F #A22 MM para o tamanho mais significativo
+#loop A24
+8000 #A24 LD valordeX
+E000 #A26 Put
+4A71 #A28 + checksum
+9A71 #A2A MM cheksum
+8A72 #A2C LD contador
+4A6C #A2E + 1
+9A72 #A30 MM contador
+5A73 #A32 contador - limite
+1A5A #A34 se zero vai ate a subrotina q salva o checksum
+8A25 #A36 LD XX
+4A6C #A38 XX + 1
+9A25 #A3A MM XX
+5A74 #A3C XX - FF se o resultado for positivo
+2A48 #A3E vai para nao chegou em 100
+1A48 #A40 vai para nao chegou em 100
+#entra nessa linha, pq tem q aumentar o 3digito do comando
+8A24 #A42 LD no primeiro byte de varENDERECOPUT
+4A6C #A44 + 1
+9A24 #A46 MM no primeiro byte de varENDERECOPUT
+#Nao chegou em 100 A48
+8A24 #A48 LD qseXX
+5A76 #A4A - commando load
+5A6F #A4C - tamanho mais significativo
+6A75 #A4E mulitplica por dezesseis
+6A75 #A50 multiplica por dezesseis de novo, para deslocar 1 byte
+4A25 #A52 + XX
+5A70 #A54 - tamanho menos significativo
+1A66 #A56 JZ fim
+0A24 #A58 JP loop
+#Rotinadelimite A5A
+8A71 #A5A LD checksum
+E000 #A5C put no valor do checksum
+3000 #A5E Load value 000   zera checksum e contador
+9A71 #A60 MM checksum
+9A72 #A62 MM contador
+0A36 #A64 volta da Rotina de limite
+#fim A66
+8A71 #A66 LD checksum
+E000 #A68 Put checksum
+C000 #A6A halt
+#variaveis
+01 #A6C varUM
+00 #A6D varENDERECOINICIALMAIOR
+00 #A6E varENDERECOINICIALMENOR
+02 #A6F varTAMANHOMAIOR
+00 #A70 varTAMANHOMENOR
+00 #A71 varCHECKSUM
+00 #A72 varCONTADOR
+7F #A73 varLIMITE
+FF #A74 varFF
+10 #A75 varDEZESSEIS
+80 #A76 varLOAD

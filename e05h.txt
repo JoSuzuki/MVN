@@ -1,0 +1,93 @@
+#Esse programa comeca da posicao /12
+#leitura do enderecoinicial e do tamanho
+3000 #012 LV 000
+90A6 #014 MM checksum
+90A7 #016 MM contador
+D000 #018 get
+90A2 #01A MM endereco inicial maior
+40AC #01C + comando MM
+9044 #01E MM altera byte mais significativo do comando move
+D000 #020 get
+90A3 #022 MM endereco inicial menor
+9045 #024 altera byte menos significativo do comando move
+D000 #026 get
+90A4 #028 MM tamanho maior
+D000 #02A get
+90A5 #02C MM tamanho menor
+80A2 #02E LD endereco inicial maior
+40A4 #030 + tamanho maior
+60AB #032 multiplica por 16
+60AB #034 multiplica por 16 de novo para deslocar um byte
+40A3 #036 + endereco inicial menor
+40A5 #038 + tamamnho menor
+90A5 #03A guarda valor do endereco final menor no tamanho menor
+70AB #03C divide por 16
+70AB #03E divide por 16 de novo para deslocar um byte
+90A4 #040 guarda valor do endereco final maior no tamanho maior
+#loop de  leitura /042
+D000 #042 Get
+9FFD #044 MM XX
+40A6 #046 + checksum
+90A6 #048 MM checksum
+80A7 #04A LD contador
+40A9 #04C + 1
+90A7 #04E MM contador
+50A8 #050 contador - limite
+1078 #052 pula para subrotina de tratamento do checksum
+8045 #054 LD XX
+40A9 #056 + UM
+9045 #058 MM XX
+50AA #05A - FF, caso de positivo entra no tratamento
+2066 #05C caso negativo
+1066 #05E ou igual a zero, pula essa parte de tratamento
+#trata qndo tiver q alterar o 3caractere do comando move
+8044 #060 LD no primeiro byte do move
+40A9 #062 + um
+9044 #064 MM no primeiro byte do move
+#pulou tratamento, nao chegou em /100
+8044 #066 LD qseXX
+50AC #068 - commando move
+50A4 #06A - tamanho maior
+60AB #06C multiplica por 16
+60AB #06E multiplica por 16 de novo para deslocar um byte
+4045 #070 + XX
+50A5 #072 - tamanho menos significativo
+1088 #074 JZ vai ate a rotina de saida
+0042 #076 JP LOOP
+#subrotina de tratamento do checksum 078
+D000 #078 get checksum esperado
+50A6 #07A - checksum
+1080 #07C se zero, bom
+CFFF #07E halt, deu erro no checksum
+#Pulou o halt
+3000 #080 LD 000
+90A7 #082 MM contador
+90A6 #084 MM checksum
+0054 #086 volta da subrotina
+#rotina de saida /088
+D000 #088 get ultimo checksum esperado
+50A6 #08A - checksum real
+1090 #08C se zero, nao deu erro
+CFFE #08E halt, deu erro no ultimo checksum
+#nao deu erro
+80A2 #090 LD endereco inicial maior prepara saida para comeco do outro programa
+60AB #092 multiplica por 16
+60AB #094 multiplica por 16
+40A3 #096 + byte menos significativo do endereco inicial
+90A1 #098 MM para a instrucao de jump
+70AB #09A divide por 16
+70AB #09C divide por 16
+90A0 #09E MM para a qse instrucao de jump
+0000 #0A0 instrucao de jump
+#variaveis
+00 #0A2 varENDERECOINICIALMAIOR
+00 #0A3 varENDERECOINICIALMENOR
+00 #0A4 varTAMANHOMAIOR
+00 #0A5 varTAMANHOMENOR
+00 #0A6 varCHECKSUM
+00 #0A7 varCONTADOR
+7F #0A8 varLIMIITE
+01 #0A9 varUM
+FF #0AA varFF
+10 #0AB varDEZESSEIS
+90 #0AC varMOVE

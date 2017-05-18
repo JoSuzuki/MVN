@@ -1,0 +1,22 @@
+#calcula raiz de n, obs nao calcula raiz de 0
+01 #0 UM
+02 #1 DOIS
+01 #2 IMPAR
+01 #3 N
+19 #4 N2
+00 #5 preenche posicao 5 pra comecar em par
+#6 Loop
+8004 #6LD N2
+5002 #8- Impar
+101E #10 JZ FORA
+201E #12 JN FORA
+9004 #14 MM N2
+8003 #16 LD N
+4000 #18 + UM
+9003 #20 MM N
+8002 #22 LD impar
+4001 #24 + DOIS
+9002 #26 MM IMPAR
+0006 #28 JP Loop
+#FORA
+C000 #30 Halt Ci = 000

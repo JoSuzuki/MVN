@@ -1,0 +1,21 @@
+#Esse programa comeca na posicao /38
+8051 #38 LD Endereco inicial
+9041 #3A MM X
+4052 #3C + Tamanho
+9052 #3E MM Tamanho
+#loop
+80FF #40 LD mem[X]
+E000 #42 Put
+8041 #44 LD X
+4050 #46 + 1
+9041 #48 MM X
+5052 #4A - Tamanho
+1054 #4C Se zero halt
+0040 #4E Pula para loop
+#variaveis
+1 #50 Um
+0 #51 Endereco inicial
+10 #52 Tamanho
+00 #53 Fill de memoria para comecar em par
+#saida
+C000 #54 Halt

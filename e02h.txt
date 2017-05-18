@@ -1,0 +1,12 @@
+#Esse programa comeca da posicao 34
+20 #32 Tamanho do programa
+01 #33 UM
+#LOOP
+D000 #34 Get
+9000 #36 MM X
+8025 #38 LD valordeX
+4021 #40 + 01
+9025 #42 MM valordeX
+5020 #44 - Tamanho do programa
+1006 #46 JZ vai ate 006 (inicio do programa e01b)
+0022 #48 JP LOOP

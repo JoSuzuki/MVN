@@ -1,0 +1,132 @@
+#Esse programa comeca da posicao /12
+#leitura do enderecoinicial e do tamanho
+3000 #012 LV 000
+90E4 #014 MM checksum
+90E5 #016 MM contador
+A094 #018 Vai para subrotina de get q salva o valor na variavel get
+80EF #01A LD no valor da variavel get
+90E0 #01C MM endereco inicial maior
+40EA #01E + comando MM
+904E #020 MM altera byte mais significativo do comando move
+A094 #022 Vai para subrotina de get q salva o valor na variavel get
+80EF #024 LD no valor da variavel get
+90E1 #026 MM endereco inicial menor
+904F #028 altera byte menos significativo do comando move
+A094 #02A Vai para subrotina de get q salva o valor na variavel get
+80EF #02C LD no valor da variavel get
+90E2 #02E MM tamanho maior
+A094 #030 Vai para subrotina de get q salva o valor na variavel get
+80EF #032 LD no valor da variavel get
+90E3 #034 MM tamanho menor
+80E0 #036 LD endereco inicial maior
+40E2 #038 + tamanho maior
+60E9 #03A multiplica por 16
+60E9 #03C multiplica por 16 de novo para deslocar um byte
+40E1 #03E + endereco inicial menor
+40E3 #040 + tamamnho menor
+90E3 #042 guarda valor do endereco final menor no tamanho menor
+70E9 #044 divide por 16
+70E9 #046 divide por 16 de novo para deslocar um byte
+90E2 #048 guarda valor do endereco final maior no tamanho maior
+#loop de  leitura /04A
+A094 #04A Vai para subrotina de get q salva o valor na variavel get
+80EF #04C LD no valor da variavel get
+9000 #04E MM XX
+40E4 #050 + checksum
+90E4 #052 MM checksum
+80E5 #054 LD contador
+40E7 #056 + 1
+90E5 #058 MM contador
+50E6 #05A contador - limite
+1082 #05C pula para rotina de tratamento do checksum
+804F #05E LD XX
+40E7 #060 + UM
+904F #062 MM XX
+50E8 #064 - FF, caso de positivo entra no tratamento
+2070 #066 caso negativo
+1070 #068 ou igual a zero, pula essa parte de tratamento
+#trata qndo tiver q alterar o 3caractere do comando move
+804E #06A LD no primeiro byte do move
+40E7 #06C + um
+904E #06E MM no primeiro byte do move
+#AQUI Nao chegou em /100
+804E #070 LD qseXX
+50EA #072 - commando move
+50E2 #074 - tamanho maior
+60E9 #076 multiplica por 16
+60E9 #078 multiplica por 16 de novo para deslocar um byte
+404F #07A + XX
+50E3 #07C - tamanho menos significativo
+10C4 #07E JZ vai ate a rotina de saida
+004A #080 JP LOOP
+#rotina de tratamento do checksum 082
+A094 #082 Vai para subrotina de get q salva o valor na variavel get
+80EF #084 LD no valor da variavel get, o valor do checksum esperado
+50E4 #086 - checksum
+108C #088 se zero, bom
+CFFF #08A halt, deu erro no checksum
+#PULAHALT
+3000 #08C LD 000
+90E5 #08E MM contador
+90E4 #090 MM checksum
+005E #092 volta da rotina
+#Subrotina de conversao do get byte ascii para binario
+0000 #094 endereco de volta da subrotina
+D001 #096 get char mais significativo do byte
+90F0 #098 MM na variavel auxilar get
+50ED #09A -60 para ver se eh letra ou numero
+20B8 #09C jmp if negative para ROTINADENUMERO1
+80F0 #09E LD na variavel auxiliar get
+50EC #0A0 -0x37 pra transformar o char letra em seu numero
+60E9 #0A2 multiplica por 16, pois eh o mais significativo volta da ROTINADENUMERO1
+90EF #0A4 MM na variavel get
+D002 #0A6 get char menos significativo do byte
+90F0 #0A8 MM na variavel auxiliar get
+50ED #0AA -60 para ver se eh letra ou numero
+20BE #0AC jmp if negative para a ROTINADENUMERO2
+80F0 #0AE LD na variavel auxiliar get
+50EC #0B0 -0x37 para transformar em letra
+40EF #0B2 + soma resultado com o valor presente em get, volta da ROTINADENUMERO2
+90EF #0B4 MM guarda resultado na variavel get
+B094 #0B6 volta da subrotina
+#ROTINADENUMERO1
+80F0 #0B8 LD na variavel auxiliar get
+50EB #0BA -0x30 pra transformar o char numero em seu numero
+00A2 #0BC jump incondicional para volta rotina de numero1
+#ROTINADENUMERO2
+80F0 #0BE LD na variavel auxiliar get
+50EB #0C0 -0x30 pra transformar o char numero em seu numero
+00B2 #0C2 jump incondicional para volta rotina de numero2
+#rotina de saida /0C4
+A094 #0C4 Vai para subrotina de get q salva o valor na variavel get
+80EF #0C6 LD no valor da variavel get, no ultimo checksum esperado
+50E4 #0C8 - checksum real
+10CE #0CA se zero, bom
+CFFE #0CC halt, deu erro no ultimo checksum
+#deu bom
+80E0 #0CE LD endereco inicial maior prepara saida para comeco do outro programa
+60E9 #0D0 multiplica por 16
+60E9 #0D2 multiplica por 16
+40E1 #0D4 + byte menos significativo do endereco inicial
+90DF #0D6 MM para a instrucao de jump
+70E9 #0D8 divide por 16
+70E9 #0DA divide por 16
+90DE #0DC MM para a qse instrucao de jump
+0000 #0DE instrucao de jump
+#variaveis
+00 #0E0 varENDERECOINICIALMAIOR
+00 #0E1 varENDERECOINICIALMENOR
+00 #0E2 varTAMANHOMAIOR
+00 #0E3 varTAMANHOMENOR
+00 #0E4 varCHECKSUM
+00 #0E5 varCONTADOR
+7F #0E6 varLIMIITE
+01 #0E7 varUM
+FF #0E8 varFF
+10 #0E9 varDEZESSEIS
+90 #0EA varMOVE
+30 #0EB varNUMERO
+37 #0EC varLETRA
+3C #0ED varSESSENTA
+00 #0EF varGET
+00 #0F0 varAUXILIARGET

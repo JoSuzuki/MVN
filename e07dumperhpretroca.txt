@@ -1,0 +1,122 @@
+#Esse programa comeca da posicao $A00 (2560)
+
+#Inicializa e prepara variaveis
+3000 #A00 Load value 000
+9VARCHECKSUM #A02 MM checksum
+9VARCONTADOR #A04 MM contador
+8VARENDERECOINICIALMAIOR #A06 LD endereco inicial mais singificativo
+4VARLOAD #A08 + $80 valor do comando LOAD
+9QSEVARENDERECOPUT #A0A MM endereco inicial mais significativo
+8VARENDERECOINICIALMENOR #A0C LD endereco inicial menos significativo
+9VARENDERECOPUT #A0E MM endereco inicial menos significativo
+8VARENDERECOINICIALMAIOR #A10 LD endereco inicial mais significativo
+4VARTAMANHOMAIOR #A12 Soma com o tamanho mais significativo
+6VARDEZESSEIS #A14 Multiplica por 16
+6VARDEZESSEIS #A16 Multiplica de novo por 16 pra ter 256 (deslocamento de um byte)
+4VARENDERECOINICIALMENOR #A18 Soma com o endereco menos significativo
+4VARTAMANHOMENOR #A1A Soma com o tamanho menos significativo
+9VARTAMANHOMENOR #A1C MM tamanho menos significativo
+7VARDEZESSEIS #A1E Divide por 16
+7VARDEZESSEIS #A20 Divide de novo por 16
+9VARTAMANHOMAIOR #A22 MM para o tamanho mais significativo
+
+#loop A24
+8varENDERECOPUT #A24 LD o numero a ser put
+9VARPUT #A26 MM guarda na variavel put
+ASUBROTINADEPUTHEXA #A28 jump para a subrotina de put hexa
+8VARPUT #A2A LD o numero a ser put
+4VARCHECKSUM #A2C + checksum
+9VARCHECKSUM #A2E MM cheksum
+8VARCONTADOR #A30 LD contador
+4VARUM #A32 + 1
+9VARCONTADOR #A34 MM contador
+5VARLIMITE #A36 contador - limite
+1ROTINADELIMITE #A38 se zero vai ate a subrotina q salva o checksum
+8VARENDERECOPUT #A3A LD XX
+4VARUM #A3C XX + 1
+9VARENDERECOPUT #A3E MM XX
+5VARFF #A40 XX - FF se o resultado for positivo
+2AQUI #A42 vai para nao chegou em 100
+1AQUI #A44 vai para nao chegou em 100
+#entra nessa linha, pq tem q aumentar o 3digito do comando
+8QSEVARENDERECOPUT #A46 LD no primeiro byte de varENDERECOPUT
+4VARUM #A48 + 1
+9QSEVARENDERECOPUT #A4A MM no primeiro byte de varENDERECOPUT
+#AQUI A4C
+8QSEVARENDERECOPUT #A4C LD qseXX
+5VARLOAD #A4E - commando load
+5VARTAMANHOMAIOR #A50 - tamanho mais significativo
+6VARDEZESSEIS #A52 mulitplica por dezesseis
+6VARDEZESSEIS #A54 multiplica por dezesseis de novo, para deslocar 1 byte
+4VARENDERECOPUT #A56 + XX
+5VARTAMANHOMENOR #A58 - tamanho menos significativo
+1ALTERAR #A5A JZ fim
+0ALTERAR #A5C JP loop
+
+#Rotinadelimite A5E
+8VARCHECKSUM #A5E LD checksum
+9VARPUT #A60 MM para a variavel put
+ASUBROTINADEHEXA #A62 vai para a subrotina de put em hexa
+3000 #A64 Load value 000   zera checksum e contador
+9VARCHECKSUM #A66 MM checksum
+9VARCONTADOR #A68 MM contador
+0VOLTASUBROTINALIMITE #A6A volta da Rotina de limite
+
+#subrotina de put binario para ascii hexa
+0000 #A6C lugar para salvar o endereco de retorno da subrotina
+8VARPUT #A6E LD no endereco
+7VARDEZESSEIS #A70 divide por 16 para pegar o caractere mais significativo
+9VARAUXILIARPUT #A72 MM na variavel auxiliar put
+5VARDEZ #A74 - 10 pra ver se eh numero ou letra
+2NEGATIVO #A76 pula para caso de numero
+8VARAUXILIARPUT #A78 LD na variavel auxiliar put
+4VARLETRA #A7A + 0x37 pra codificar letra hexadecimal em char
+E001 #A7C put com operando 01 -> para primeiro char
+8VARPUT #A7E LD no endereço
+6VARDEZESSEIS #A80 multiplica por 16 para deslocar um caractere
+9VARAUXILIARPUT #A82 MM para variavel put auxiliar (serve para conseguir cortar o caractere menos significativo)
+8VARAUXILIARPUT #A84 LD variavel put auxiliar
+7VARDEZESSEIS #A86 divide por 16
+9VARAUXILIARPUT #A88 MM variavel put auxiliar
+5VARDEZ #A8A -10 para ver se eh numero ou letra
+2NEGATIVODENOVO #A8C pula para caso de numero
+8VARAUXILIARPUT #A8E LD no caractere menos significativo (variavel auxiliar put)
+4VARLETRA #A90 + 0x37 para codificar letra em char
+E002 #A92 put com operando 002 -> para o segundo char
+BvarENDERECODOINICIODESSASUBROTINA #A94 Retorno de subrotina
+
+#NEGATIVO
+8VARAUXILIARPUT #A96 LD na variavel auxiliar put
+4VARNUMERO #A98 + 0x30 para codificar letra em hexadecimal
+E001 #A9A put com operando 01 -> primeiro char
+0VOLTADONEGATIVO #A9C socorro
+
+#NEGATIVODENOVO
+8VARAUXILIARPUT #A9E LD no endereco
+4VARNUMERO #AA0 + 0x30 para codificar letra em hexadecimal
+E002 #AA2 put com operando 02 ->segundo char
+0VOLTADONEGATIVODENOVO #AA4
+
+#fim AA6
+8VARCHECKSUM #AA6 LD checksum
+9VARPUT #AA8 MM para a variavel put
+ASUBROTINADEHEXA #AAA vai para a subrotina de put em hexa
+C000 #AAC halt
+
+#variaveis
+01 #AAE varUM
+00 #AAF varENDERECOINICIALMAIOR
+00 #AB0 varENDERECOINICIALMENOR
+10 #AB1 varTAMANHOMAIOR
+00 #AB2 varTAMANHOMENOR
+00 #AB3 varCHECKSUM
+00 #AB4 varCONTADOR
+7F #AB5 varLIMITE
+FF #AB6 varFF
+10 #AB7 varDEZESSEIS
+80 #AB8 varLOAD
+0A #AB9 varDEZ
+30 #ABA varNUMERO
+37 #ABB varLETRA
+00 #ABC varPUT
+00 #ABD varAUXILIARPUT

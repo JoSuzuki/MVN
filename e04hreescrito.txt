@@ -1,0 +1,11 @@
+D000 #0 Get, como get nao tem operando, a variavel UM eh guardada nele
+9010 #2 MM X (010 = posição inicial do programa)
+8003 #4 LD valordeX
+4001 #6 + UM
+9003 #8 MM valordeX
+5FFF #A - Tamanho do loader
+1012 #C JZ vai ate 012 (inicio do proximo programa )
+0000 #E JP LOOP
+#variáveis
+01 #10 UM
+10 #11 Tamanho do loader

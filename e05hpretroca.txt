@@ -1,0 +1,97 @@
+#Esse programa comeca da posicao /12
+#leitura do enderecoinicial e do tamanho
+3000 #012 LV 000
+9VARCHECKSUM #014 MM checksum
+9VARCONTADOR #016 MM contador
+D000 #018 get
+9VARENDERECOINICIALMAIOR #01A MM endereco inicial maior
+4VARMOVE #01C + comando MM
+9QSEVARENDERECOMOVE #01E MM altera byte mais significativo do comando move
+D000 #020 get
+9VARENDERECOINICIALMENOR #022 MM endereco inicial menor
+9VARENDERECOMOVE #024 altera byte menos significativo do comando move
+D000 #026 get
+9VARTAMANHOMAIOR #028 MM tamanho maior
+D000 #02A get
+9VARTAMANHOMENOR #02C MM tamanho menor
+8VARENDERECOINICIALMAIOR #02E LD endereco inicial maior
+4VARTAMANHOMAIOR #030 + tamanho maior
+6VARDEZESSEIS #032 multiplica por 16
+6VARDEZESSEIS #034 multiplica por 16 de novo para deslocar um byte
+4VARENDERECOINICIALMENOR #036 + endereco inicial menor
+4VARTAMANHOMENOR #038 + tamamnho menor
+9VARTAMANHOMENOR #03A guarda valor do endereco final menor no tamanho menor
+7VARDEZESSEIS #03C divide por 16
+7VARDEZESSEIS #03E divide por 16 de novo para deslocar um byte
+9VARTAMANHOMAIOR #040 guarda valor do endereco final maior no tamanho maior
+
+#loop de  leitura /042
+D000 #042 Get
+9varENDERECOMOVE #044 MM XX
+4VARCHECKSUM #046 + checksum
+9VARCHECKSUM #048 MM checksum
+8VARCONTADOR #04A LD contador
+4VARUM #04C + 1
+9VARCONTADOR #04E MM contador
+5VARLIMITE #050 contador - limite
+1SUBROTINACHECKSUM #052 pula para rotina de tratamento do checksum
+8VARENDERECOMOVE #054 LD XX
+4VARUM #056 + UM
+9VARENDERECOMOVE #058 MM XX
+5VARFF #05A - FF, caso de positivo entra no tratamento
+2AQUI #05C caso negativo
+1AQUI #05E ou igual a zero, pula essa parte de tratamento
+#trata qndo tiver q alterar o 3caractere do comando move
+8QSEVARENDERECOMOVE #060 LD no primeiro byte do move
+4VARUM #062 + um
+9QSEVARENDERECOMOVE #064 MM no primeiro byte do move
+#AQUI Nao chegou em /100
+8QSEVARENDERECOMOVE #066 LD qseXX
+5VARMOVE #068 - commando move
+5VARTAMANHOMAIOR #06A - tamanho maior
+6VARDEZESSEIS #06C multiplica por 16
+6VARDEZESSEIS #06E multiplica por 16 de novo para deslocar um byte
+4VARENDERECOMOVE #070 + XX
+5VARTAMANHOMENOR #072 - tamanho menos significativo
+1SAIDA #074 JZ vai ate a rotina de saida
+0VOLTAPARAOLOOP #076 JP LOOP
+
+#rotina de tratamento do checksum 078
+D000 #078 get checksum esperado
+5VARCHECKSUM #07A - checksum
+1PULAHALT #07C se zero, bom
+CFFF #07E halt, deu erro no checksum
+#PULAHALT
+3000 #080 LD 000
+9VARCONTADOR #082 MM contador
+9VARCHECKSUM #084 MM checksum
+0VOLTADASUBROTINA #086 volta da subrotina
+
+#rotina de saida /088
+D000 #088 get ultimo checksum esperado
+5VARCHECKSUM #08A - checksum real
+1PULAPIRATA #08C se zero, bom
+CFFE #08E halt, deu erro no ultimo checksum
+#deu bom
+8VARENDERECOINICIALMAIOR #090 LD endereco inicial maior prepara saida para comeco do outro programa
+6VARDEZESSEIS #092 multiplica por 16
+6VARDEZESSEIS #094 multiplica por 16
+4VARENDERECOINICIALMENOR #096 + byte menos significativo do endereco inicial
+9 #098 MM para a instrucao de jump
+7VARDEZESSEIS #09A divide por 16
+7VARDEZESSEIS #09C divide por 16
+9 #09E MM para a qse instrucao de jump
+0000 #0A0 instrucao de jump
+
+#variaveis
+00 #0A2 varENDERECOINICIALMAIOR
+00 #0A3 varENDERECOINICIALMENOR
+00 #0A4 varTAMANHOMAIOR
+00 #0A5 varTAMANHOMENOR
+00 #0A6 varCHECKSUM
+00 #0A7 varCONTADOR
+7F #0A8 varLIMIITE
+01 #0A9 varUM
+FF #0AA varFF
+10 #0AB varDEZESSEIS
+90 #0AC varMOVE
