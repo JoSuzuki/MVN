@@ -69,10 +69,12 @@ class EventEngine{
 
   public void loadMemory(){
     Scanner scan = new Scanner(System.in);
+    System.out.println("What is the name of the file you want to load?");
+    String nameFile = scan.next();
     System.out.println("Where do you want to start?(decimal)");
     int index = scan.nextInt();
     try{
-      scan = new Scanner(new FileInputStream(new File(".\\memory.txt")));
+      scan = new Scanner(new FileInputStream(new File(".\\"+nameFile)));
       String memoryTxt = "";
       while(scan.hasNextLine()){
         String line = scan.nextLine();
