@@ -57,7 +57,7 @@ public static void main(String[] args) {
 						}
           }
           if(splitLine[hasLabel].startsWith("ORG")) {
-            ci = Integer.valueOf(splitLine[hasLabel+1]);
+            ci = hexStringToDecimal(splitLine[hasLabel+1]);
           } else if (splitLine[hasLabel].startsWith("NAME")){
             name = splitLine[hasLabel+1];
           } else if (splitLine[hasLabel].startsWith("EXT")) {
@@ -78,7 +78,7 @@ public static void main(String[] args) {
             dataBlockSize = dataBlockSize + 3;
             ci++;
           } else if (isInTable(splitLine[hasLabel], mnemonicTable)) {
-            if(!splitLine[hasLabel+1].startsWith("\\") && !isInTable(splitLine[hasLabel+1], symbolicTable) && !isInTable(splitLine[hasLabel+1], externalTable)){
+            if(!splitLine[hasLabel+1].startsWith("/") && !isInTable(splitLine[hasLabel+1], symbolicTable) && !isInTable(splitLine[hasLabel+1], externalTable)){
                 symbolicTable.add(new SymbolMap(splitLine[hasLabel+1], -1, false));
             }
             dataBlockSize = dataBlockSize + 3;
@@ -114,9 +114,9 @@ public static void main(String[] args) {
         writer.println("1"); // subroutine program
         checksum = checksum + 1;
       }
-      writer.println(name.charAt(0)); // first char
+      writer.println(Integer.valueOf(name.charAt(0))); // first char
       checksum = checksum + name.charAt(0);
-      writer.println(name.charAt(name.length()-1)); // last char
+      writer.println(Integer.valueOf(name.charAt(name.length()-1))); // last char
       checksum = checksum + name.charAt(name.length()-1);
       writer.println(checksum % 256);
     }
@@ -130,9 +130,9 @@ public static void main(String[] args) {
       checksum = checksum + 6;
       writer.println("2"); // "entrypoint" block
       checksum = checksum + 2;
-      writer.println(entry.charAt(0)); // first char of the entry point name
+      writer.println(Integer.valueOf(entry.charAt(0))); // first char of the entry point name
       checksum = checksum + entry.charAt(0);
-      writer.println(entry.charAt(entry.length()-1)); // last char of the entry point name
+      writer.println(Integer.valueOf(entry.charAt(entry.length()-1))); // last char of the entry point name
       checksum = checksum + entry.charAt(entry.length()-1);
       writer.println(symbolicTable.get(entryIndex).getValue()/256); //most significative byte of the address
       checksum = checksum + symbolicTable.get(entryIndex).getValue()/256;
@@ -149,9 +149,9 @@ public static void main(String[] args) {
       checksum = checksum + 6;
       writer.println("3"); // "entrypoint" block
       checksum = checksum + 3;
-      writer.println(external.charAt(0)); // first char of the external name
+      writer.println(Integer.valueOf(external.charAt(0))); // first char of the external name
       checksum = checksum + external.charAt(0);
-      writer.println(external.charAt(external.length()-1)); // last char of the external name
+      writer.println(Integer.valueOf(external.charAt(external.length()-1))); // last char of the external name
       checksum = checksum + external.charAt(external.length()-1);
       writer.println(externalValue/256); //most significative byte of the corresponding external
       checksum = checksum + externalValue/256;
@@ -184,15 +184,15 @@ public static void main(String[] args) {
           } else if (splitLine[hasLabel].startsWith("EXT")) {
           } else if (splitLine[hasLabel].startsWith("ENT")) {
           } else if (splitLine[hasLabel].startsWith("DB")) {
-            writer.print("01 ");
-            checksum = checksum + 1;
-            writer.print(splitLine[hasLabel+1]);
+            writer.print("03 ");
+            checksum = checksum + 3;
+            writer.print(hexStringToDecimal(splitLine[hasLabel+1]));
             writer.print(" 00 \n");
-            checksum = checksum + Integer.valueOf(splitLine[hasLabel+1]);
+            checksum = checksum + Integer.valueOf(hexStringToDecimal(splitLine[hasLabel+1]));
           } else if (isInTable(splitLine[hasLabel], mnemonicTable)) {
             numberPrint = mnemonicTable.get(whereInTable(splitLine[hasLabel], mnemonicTable)).getValue() * 4096;
-            if(splitLine[hasLabel+1].startsWith("\\")){
-              numberPrint = numberPrint + Integer.valueOf(splitLine[hasLabel+1].substring(1));
+            if(splitLine[hasLabel+1].startsWith("/")){
+              numberPrint = numberPrint + hexStringToDecimal(splitLine[hasLabel+1].substring(1));
               writer.print("00 ");
             } else if (isInTable(splitLine[hasLabel+1], symbolicTable)){
               numberPrint = numberPrint + symbolicTable.get(whereInTable(splitLine[hasLabel+1], symbolicTable)).getValue();
@@ -306,6 +306,15 @@ public char intToHex(int number){
     hex = 'F';
   }
   return hex;
+}
+
+public static int hexStringToDecimal(String hex){
+  int decimal = 0;
+  for(int i = 0; i < hex.length(); i ++){
+    decimal = decimal*16;
+    decimal = decimal + hexCharToDecimal(hex.charAt(i));
+  }
+  return decimal;
 }
 
 public static int hexCharToDecimal(char hex){
