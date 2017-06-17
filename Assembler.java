@@ -20,9 +20,8 @@ public static void main(String[] args) {
     ArrayList<SymbolMap> symbolicTable = new ArrayList<SymbolMap>();
     ArrayList<SymbolMap> externalTable = new ArrayList<SymbolMap>();
     ArrayList<String> entryTable = new ArrayList<String>();
-    String symbolicFile = ".\\symbolic.txt";
-    String absoluteFile = ".\\absolute.txt";
-    Scanner scan = new Scanner(new FileInputStream(new File(symbolicFile)));
+    String symbolicFile;
+    String relocableFile;
     int numberPrint ;
     String[] splitLine;
     int ci = 0;
@@ -32,6 +31,19 @@ public static void main(String[] args) {
     String totaltxt = "";
     String name = "";
 		int index;
+    Scanner userInput = new Scanner(System.in);
+    String selection = "";
+    String file;
+
+
+
+    System.out.println("Type the name of the file you want to assemble:");
+    file = userInput.next();
+    symbolicFile = ".\\" + file;
+    relocableFile = ".\\relocable_"+file;
+    Scanner scan = new Scanner(new FileInputStream(new File(symbolicFile)));
+
+
     //Starts first step
     while(scan.hasNextLine()) {
       //read line
@@ -99,7 +111,7 @@ public static void main(String[] args) {
       }
     }
 
-    PrintWriter writer = new PrintWriter(new File(absoluteFile));
+    PrintWriter writer = new PrintWriter(new File(relocableFile));
     int checksum = 0;
 
     //writes name block
@@ -209,7 +221,7 @@ public static void main(String[] args) {
             writer.print(" ");
             writer.print(numberPrint%256);
             writer.print("\n");
-            checksum = checksum + numberPrint;
+            checksum = checksum + numberPrint/256 + numberPrint%256;
           } else {
             System.out.println("This ("+splitLine[hasLabel]+") does not classify as a mnemonic or an pseudoinstruction write step");
           }
