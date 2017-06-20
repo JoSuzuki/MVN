@@ -17,6 +17,7 @@ public static void main(String[] args) {
   try {
     Scanner userInput = new Scanner(System.in);
     ArrayList<ExternalMap> externalTable = new ArrayList<ExternalMap>();
+    ArrayList<EntryMap> entryTable = new ArrayList<EntryMap>();
     ArrayList<String> files = new ArrayList<String>();
     int selection = 0;
     int org = 0;
@@ -100,11 +101,10 @@ public static void main(String[] args) {
           checksum = checksum + splitFile[index+2] + splitFile[index+3];
           realAddress = splitFile[index+4]*256 + splitFile[index+5];
           checksum = checksum + splitFile[index+4] + splitFile[index+5];
-          if(isInTable(entryName, externalTable)){
-            externalTable.get(whereInTable(entryName, externalTable)).setRealAddress(realAddress+totalProgramSize);
-            externalTable.get(whereInTable(entryName, externalTable)).setDefined(true);
+          if(isInEntryTable(entryName, entryTable) == false){
+            entryTable.add(new EntryMap(entryName, realAddress + totalProgramSize));
           } else {
-            externalTable.add(new ExternalMap("undefined", entryName, -1, realAddress, false));
+            System.out.println("This entry point ("+entryName+") has already been defined");
           }
         } else if (splitFile[index+1] == 3){ // reads external block
           checksum = checksum + splitFile[index+1];
@@ -113,14 +113,11 @@ public static void main(String[] args) {
           checksum = checksum + splitFile[index+2] + splitFile[index+3];
           internalAddress = splitFile[index+4]*256 + splitFile[index+5];
           checksum = checksum + splitFile[index+4] + splitFile[index+5];
-          if(isInTable(externalName, externalTable)){
-            externalTable.get(whereInTable(externalName, externalTable)).setProgramName(moduleName);
-            externalTable.get(whereInTable(externalName, externalTable)).setInternalAddress(internalAddress);
-            externalTable.get(whereInTable(externalName, externalTable)).setDefined(true);
+          if(isInExternalTable(moduleName, externalName, externalTable) == false){
+            externalTable.add(new ExternalMap(moduleName, externalName, internalAddress));
           } else {
-            externalTable.add(new ExternalMap(moduleName, externalName, internalAddress, -1, false));
+            System.out.println("This external ("+externalName+","+moduleName+") has already been defined in this module");
           }
-
         } else if (splitFile[index+1] == 4){ // reads data block
           checksum = checksum + splitFile[index+1];
 
@@ -150,8 +147,8 @@ public static void main(String[] args) {
     }
 
     for (int i = 0; i < externalTable.size() ; i++){
-      if(externalTable.get(i).getDefined() == false){
-        System.out.println("The entry/external "+externalTable.get(i).getExternalName()+" from "+externalTable.get(i).getProgramName()+" is not defined");
+      if(isInEntryTable(externalTable.get(i).getExternalName(), entryTable) == false){
+        System.out.println("The external "+externalTable.get(i).getExternalName()+" from "+externalTable.get(i).getProgramName()+" is not defined in the entryTable");
       }
     }
 
@@ -159,7 +156,9 @@ public static void main(String[] args) {
     int checksumAbsolute = 0;
     int numberPrint;
     int counter = 0;
+    int originalOrg = org;
     int newOrg = org;
+
 
     writer.printf("%02X %02X \n", org/256, org%256);
     writer.printf("%02X %02X \n", totalProgramSize/256, totalProgramSize%256);
@@ -172,7 +171,6 @@ public static void main(String[] args) {
       externalName = "";
       entryName = "";
       index = 0;
-      checksumAbsolute = 0;
       org = newOrg;
       //Makes the hole file into one big string
       while(scan.hasNextLine()){
@@ -217,7 +215,7 @@ public static void main(String[] args) {
               counter = reset(counter);
               newOrg = newOrg + 2;
             } else if(splitFile[index+i] == 2){
-              numberPrint = (splitFile[index+i+1]/16)*4096 + getExternalAddress(moduleName, splitFile[index+i+1]*256 + splitFile[index+i+2] - (splitFile[index+i+1]/16)*4096, externalTable) + org;
+              numberPrint = (splitFile[index+i+1]/16)*4096 + getExternalAddress(moduleName, splitFile[index+i+1]*256 + splitFile[index+i+2] - (splitFile[index+i+1]/16)*4096, externalTable, entryTable) + originalOrg;
               writer.printf("%02X ", numberPrint/256);
               counter = counter + 1;
               checksumAbsolute = addAndPrint(counter, checksumAbsolute, numberPrint/256, writer);
@@ -269,26 +267,33 @@ public static int reset(int counter){
 }
 
 
-public static boolean isInTable(String externalName, ArrayList<ExternalMap> table){
+public static boolean isInEntryTable(String entryName, ArrayList<EntryMap> table){
   for(int i = 0; i < table.size(); i++) {
-    if(externalName.equals(table.get(i).getExternalName())) {
+    if(entryName.equals(table.get(i).getEntryName())) {
       return true;
     }
   }
   return false;
 }
 
-public static int getExternalAddress(String moduleName, int internalAddress, ArrayList<ExternalMap> table){
-  for(int i = 0; i < table.size(); i++){
-    System.out.println("program:"+table.get(i).getProgramName());
-    System.out.println("program received:"+moduleName);
-    System.out.println("external:"+table.get(i).getExternalName());
-    System.out.println("internal address:"+table.get(i).getInternalAddress());
-    System.out.println("internal address received:"+internalAddress);
-    System.out.println("real address:"+table.get(i).getRealAddress());
+public static boolean isInExternalTable(String moduleName, String externalName, ArrayList<ExternalMap> table){
+  for(int i = 0; i < table.size(); i++) {
+    if(moduleName.equals(table.get(i).getProgramName()) && externalName.equals(table.get(i).getExternalName())) {
+      return true;
+    }
+  }
+  return false;
+}
 
-    if(table.get(i).getInternalAddress() == internalAddress && table.get(i).getProgramName().equals(moduleName)){
-      return table.get(i).getRealAddress();
+
+public static int getExternalAddress(String moduleName, int internalAddress, ArrayList<ExternalMap> externalTable, ArrayList<EntryMap> entryTable){
+  for(int i = 0; i < externalTable.size(); i++){
+    if(externalTable.get(i).getInternalAddress() == internalAddress && externalTable.get(i).getProgramName().equals(moduleName)){
+      for(int j = 0; j < entryTable.size(); j++){
+        if(entryTable.get(j).getEntryName().equals(externalTable.get(i).getExternalName())){
+          return entryTable.get(j).getRealAddress();
+        }
+      }
     }
   }
   return -4097;

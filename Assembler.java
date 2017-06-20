@@ -53,7 +53,6 @@ public static void main(String[] args) {
           line = line.split("#", 2)[0];       // cuts commentary out
           if(line.startsWith(" ")) {         //if it starts with an empty space has no label
             splitLine = line.split("\\s+");
-
             hasLabel = 1;
           } else {                                        //has a label
             splitLine = line.split("\\s++");
@@ -220,7 +219,7 @@ public static void main(String[] args) {
             writer.print(numberPrint/256);
             writer.print(" ");
             writer.print(numberPrint%256);
-            writer.print("\n");
+            writer.print(" \n");
             checksum = checksum + numberPrint/256 + numberPrint%256;
           } else {
             System.out.println("This ("+splitLine[hasLabel]+") does not classify as a mnemonic or an pseudoinstruction write step");

@@ -3,15 +3,12 @@ class ExternalMap{
   private String programName;
   private String externalName;
   private int internalAddress;
-  private int realAddress;
   private boolean defined;
 
-  public ExternalMap(String programName, String externalName, int internalAddress, int realAddress, boolean defined){
+  public ExternalMap(String programName, String externalName, int internalAddress){
     this.programName = programName;
     this.externalName = externalName;
     this.internalAddress = internalAddress;
-    this.realAddress = realAddress;
-    this.defined = defined;
   }
 
   public String getProgramName(){
@@ -23,12 +20,6 @@ class ExternalMap{
   public int getInternalAddress(){
     return this.internalAddress;
   }
-  public int getRealAddress(){
-    return this.realAddress;
-  }
-  public boolean getDefined(){
-    return this.defined;
-  }
 
   public void setProgramName(String programName){
     this.programName = programName;
@@ -39,11 +30,6 @@ class ExternalMap{
   public void setInternalAddress(int internalAddress){
     this.internalAddress = internalAddress;
   }
-  public void setRealAddress(int realAddress){
-    this.realAddress = realAddress;
-  }
-  public void setDefined(boolean defined){
-    this.defined = defined;
-  }
+
 
 }
