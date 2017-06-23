@@ -34,6 +34,7 @@ public static void main(String[] args) {
     Scanner userInput = new Scanner(System.in);
     String selection = "";
     String file;
+    boolean isAbsolute = false;
 
 
 
@@ -51,9 +52,9 @@ public static void main(String[] args) {
       if(!line.trim().equals("")) {            // if not empty
         if(line.trim().charAt(0) != '#') {    //if not commentary
           line = line.split("#", 2)[0];       // cuts commentary out
-          if(line.startsWith(" ")) {         //if it starts with an empty space has no label
-            splitLine = line.split("\\s+");
-            hasLabel = 1;
+          if(line.startsWith(" ") || line.startsWith("\t") ||  line.startsWith("\f") ||  line.startsWith("\r")) {         //if it starts with an empty space has no label
+            splitLine = line.trim().split("\\s+");
+            hasLabel = 0;
           } else {                                        //has a label
             splitLine = line.split("\\s++");
             hasLabel = 1;
@@ -183,7 +184,7 @@ public static void main(String[] args) {
       if(!line.trim().equals("")) {            // if not empty
         if(line.trim().charAt(0) != '#') {    //if not commentary
           line = line.split("#", 2)[0];       // cuts commentary out
-          if(line.startsWith(" ") || line.startsWith("  ")) {         //if it starts with an empty space has no label
+          if(line.startsWith(" ") || line.startsWith("\t") ||  line.startsWith("\f") ||  line.startsWith("\r")) {         //if it starts with an empty space has no label
             splitLine = line.split("\\s+");
             hasLabel = 1;
           } else {                                        //has a label
