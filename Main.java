@@ -6,7 +6,7 @@ public class Main {
 		 EventEngine eventEngine = new EventEngine();
 		 Scanner scan = new Scanner(System.in);
 		 int selection;
-		 System.out.println("\nWelcome to the simulation of a MVN ");
+		 System.out.println("\nWelcome to the simulation of a MVN!");
 		 while(true){
 			 System.out.println("\n0. Start MVN execution ");
 			 System.out.println("1. See MVN state ");
