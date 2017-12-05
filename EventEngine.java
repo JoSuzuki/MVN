@@ -46,6 +46,7 @@ class EventEngine{
         break;
       case 7: //load memory
         this.loadMemory();
+        break;
     }
   }
 

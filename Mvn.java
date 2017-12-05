@@ -10,18 +10,24 @@ import java.util.Scanner;
 
 class Mvn{
 
-  private int memory[] = new int[4096];
+  private int memory[] = new int[65536];
+  private int disc[] = new int[131072];
+  private int currentBlock;
+  private int currentProgram;
   private int ci;
   private int instructionRegister;
   private int accumulator;
+  private int indirect;
   private int index = 0; //used for reading the .txt
 	private String[] getTxtSplit; //could be inside the get method, but it would be inefficient
   private Scanner scaninput = new Scanner(System.in);
 
   public Mvn(){
-    for(int i = 0; i<4096; i++){
+    for(int i = 0; i<65536; i++){
         this.memory[i] = 255;
     }
+
+
     try{
       Scanner scan = new Scanner(new FileInputStream(new File(".\\get.txt")));
       String totalTxt = "";
@@ -36,6 +42,9 @@ class Mvn{
     this.instructionRegister = 0;
     this.ci = 0;
     this.accumulator = 0;
+    this.currentBlock = 0;
+    this.currentProgram = 0;
+    this.indirect = 0;
   }
 
   public int getMemory(int i){
@@ -72,9 +81,21 @@ class Mvn{
 
 
   public void executeInstruction(){
-    this.setInstructionRegister((this.getMemory(this.getCi())*256)+this.getMemory(this.getCi()+1)); //fetch
-    int operationCode = this.getInstructionRegister()/4096; //decode
-    int operator = this.getInstructionRegister()%4096; //this variable is here just for easy use of the operator
+    int operator ;
+    int operationCode;
+    int nextCi = 2;
+    if (this.indirect == 0){
+      this.setInstructionRegister((this.getMemory(this.getCi())*256)+this.getMemory(this.getCi()+1)); //fetch
+      operationCode = this.getInstructionRegister()/4096; //decode
+      operator = this.getInstructionRegister()%4096; //normal operator
+      nextCi = 2;
+    } else {
+      this.setInstructionRegister((this.getMemory(this.getCi())*256)+this.getMemory(this.getCi()+1)); //fetch
+      operationCode = this.getInstructionRegister()/4096; //decode
+      operator = this.getMemory((this.getCi()+2)*256)+this.getMemory(this.getCi()+3); //next instruction is operator
+      nextCi = 4;
+      this.indirect = 0;
+    }
     switch (operationCode){ //execute
       case 0: //jump unconditional
         this.setCi(operator);
@@ -83,50 +104,50 @@ class Mvn{
         if (this.getAccumulator() == 0){
           this.setCi(operator);
         } else {
-          this.setCi(this.getCi()+2);
+          this.setCi(this.getCi()+nextCi);
         }
         break;
       case 2: //jump if negative
         if (this.getAccumulator() < 0)
           this.setCi(operator);
         else
-          this.setCi(this.getCi()+2);
+          this.setCi(this.getCi()+nextCi);
         break;
       case 3: //load value
         this.setAccumulator(operator);
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 4: //add
         this.setAccumulator(this.getAccumulator()+getMemory(operator));
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 5: //subtract
         this.setAccumulator(this.getAccumulator()-getMemory(operator));
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 6: //multiply
         this.setAccumulator(this.getAccumulator()*getMemory(operator));
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 7: //divide
         this.setAccumulator(this.getAccumulator()/getMemory(operator));
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 8: //load from memory
         this.setAccumulator(this.getMemory(operator));
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 9: //move to memory
         this.setMemory(operator,this.getAccumulator()%256);
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 10: //subroutine call
         this.setMemory(operator,(this.getCi()+2)/256);
         this.setMemory(operator+1,(this.getCi()+2)%256);
         this.setCi(operator+2);
         break;
-      case 11: //return from subroutine
-        this.setCi((this.getMemory(operator)*256)+this.getMemory(operator+1));
+      case 11: //indirect
+        this.indirect = 1;
         break;
       case 12: //halt machine
         this.setCi(operator);
@@ -148,7 +169,7 @@ class Mvn{
         } else if (operator == 4){
           this.setAccumulator(scaninput.nextInt());
         }
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 14: //put data
       try{
@@ -167,10 +188,10 @@ class Mvn{
       } catch(IOException e){
         System.out.println("Write put.txt error");
       }
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
       case 15: //operating system call
-        this.setCi(this.getCi()+2);
+        this.setCi(this.getCi()+nextCi);
         break;
     }
   }
