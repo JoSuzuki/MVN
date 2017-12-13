@@ -5,20 +5,29 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+
 class EventEngine{
 
   private EventList eventList;
   private boolean debug = false;
   private Mvn mvn = new Mvn();
-  private int breakpoint = 4096;
+  private int breakpoint = 65536;
   public EventEngine(){
     this.eventList = new EventList();
   }
   public void eventReaction(Event event){
+    int interruption;
     int kind = event.getKind();
     switch (kind){
       case 0: //execute next instruction
-        this.mvn.executeInstruction();
+        interruption = this.mvn.executeInstruction();
+        if (this.mvn.getAcceptInterruption() == 1){
+          if (interruption != 0){
+            this.mvn.setAcceptInterrution(0);
+            this.addEvent(interruption,0,0);
+          }
+        }
+
         if (this.mvn.getInstructionRegister()/4096 != 12 && this.mvn.getInstructionRegister()/4096 != 15 && this.mvn.getCi() != breakpoint){
           if(this.debug){
             this.addEvent(1,0,0);
@@ -47,7 +56,88 @@ class EventEngine{
       case 7: //load memory
         this.loadMemory();
         break;
+      case 8: //load disc
+        this.loadDisc();
+        break;
+      case 9: //limit for the context switch
+        this.setExecutionLimit();
+        break;
+      case 10: //interruption memory not loaded
+        System.out.println("Memory missing interruption started");
+        this.loadLogicalBlock();
+        this.mvn.setAcceptInterrution(1);
+        break;
+      case 11: //interruption switch context
+        System.out.println("Context switch interruption started");
+        this.switchContext();
+        this.mvn.setAcceptInterrution(1);
+        break;
+      case 12: //lul
+        this.mvn.inputDevice.setBuffer();
+        this.mvn.inputDevice.setReady(1);
+        this.addEvent(14,0,0);
+        break;
+      case 13:
+        this.mvn.outputDevice.setReady(1);
+        this.addEvent(15,0,0);
+        break;
+      case 14:
+        System.out.printf("Interruption InputDevice was issued \n");
+        if (this.mvn.inputDevice.getReady() == 1 && this.mvn.inputDevice.getBusy() == 1){
+          this.mvn.setAccumulator(this.mvn.inputDevice.getBuffer());
+          this.mvn.inputDevice.setBusy(0);
+          this.mvn.inputDevice.setReady(0);
+          this.mvn.setAcceptInterrution(1);
+        }
+        break;
+      case 15:
+      System.out.printf("Interruption OutputDevice was issued \n");
+        if (this.mvn.outputDevice.getReady() == 1 && this.mvn.outputDevice.getBusy() == 1){
+          this.mvn.outputDevice.printBuffer();
+          this.mvn.outputDevice.setBusy(0);
+          this.mvn.outputDevice.setReady(0);
+          this.mvn.setAcceptInterrution(1);
+        }
+        break;
     }
+  }
+
+  public void setExecutionLimit(){
+    System.out.println("What is the timeout limit you want to set?");
+    Scanner scan = new Scanner(System.in);
+    int limit = scan.nextInt();
+    this.mvn.setExecutionLimit(limit);
+  }
+
+  public void switchContext(){
+    this.mvn.switchContext();
+
+  }
+
+  public void loadDisc(){
+    Scanner scan = new Scanner(System.in);
+    System.out.println("What is the name of the file you want to load?");
+    String nameFile = scan.next();
+    System.out.println("Where do you want to start?(decimal)");
+    int index = scan.nextInt();
+    try{
+      scan = new Scanner(new FileInputStream(new File(".\\"+nameFile)));
+      String discTxt = "";
+      while(scan.hasNextLine()){
+        String line = scan.nextLine();
+        discTxt = discTxt + line.split("#", 2)[0] + " ";
+      }
+      String[] discSplitTxt = discTxt.split("\\s+");
+    for (int i = index; i < discSplitTxt.length + index; i++ ){
+        this.mvn.setDisc(i,Integer.valueOf(discSplitTxt[i-index]));
+      }
+    } catch (IOException e){
+      System.out.println("Read disc.txt error");
+    }
+  }
+
+  public void loadLogicalBlock(){
+    this.mvn.loadMissingLogicalBlock(this.mvn.getCurrentProgram(), this.mvn.getMissingLogicalBlock());
   }
 
   public void setCi(){
@@ -116,6 +206,8 @@ class EventEngine{
     this.eventList.addEnd(event);
   }
 
+
+
   public boolean getDebug(){
     return this.debug;
   }
@@ -137,9 +229,9 @@ class EventEngine{
       printHexa(j,1);
       System.out.printf(" ");
     }
-    for (int i = 0; i < 256; i++){
+    for (int i = 0; i < 4096; i++){
       System.out.printf("\n");
-      printHexa(i*16,3);
+      printHexa(i*16,4);
       System.out.printf(" ");
       for (int j = 0; j < 16;j++){
         System.out.printf(" ");

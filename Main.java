@@ -15,7 +15,8 @@ public class Main {
 			 System.out.println("4. Toogle trace state");
 			 System.out.println("5. Edit ci ");
 			 System.out.println("6. Manually edit memory ");
-			 System.out.println("7. Load memory file \n");
+			 System.out.println("7. Load memory file ");
+			 System.out.println("8. Load disc file ");
 			 System.out.println("Type the number you want:");
 			 selection = scan.nextInt();
 			 eventEngine.addEvent(selection,0,0);
